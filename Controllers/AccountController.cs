@@ -37,14 +37,14 @@ namespace Role_Base_Product_Management_System.Controllers {
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl = null) {
+        public IActionResult Login(string? returnUrl = null) {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null) {
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null) {
             if (!ModelState.IsValid) return View(model);
 
             var res = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);

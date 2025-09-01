@@ -51,7 +51,7 @@ namespace Role_Base_Product_Management_System.Controllers
             var product = new Product
             {
                 Name = model.Name,
-                EncryptedPrice = _Protector.Protect(model.Price.ToString())
+                EncryptedPrice = _Protector.Protect(model.Price.ToString()!)
             };
             _db.Products.Add(product);
             await _db.SaveChangesAsync();
@@ -70,7 +70,7 @@ namespace Role_Base_Product_Management_System.Controllers
             {
                 Id = p.Id,
                 Name = p.Name,
-                Price = decimal.Parse(_Protector.Unprotect(p.EncryptedPrice))
+                Price = decimal.Parse(_Protector.Unprotect(p.EncryptedPrice!))
             };
             return View(model);
         }
@@ -82,23 +82,32 @@ namespace Role_Base_Product_Management_System.Controllers
         public async Task<IActionResult> Edit(EditProductModel model)
         {
             if (!ModelState.IsValid) return View(model);
+
             var p = await _db.Products.FindAsync(model.Id);
             if (p == null) return NotFound();
+
             p.Name = model.Name;
-            p.EncryptedPrice = _Protector.Protect(model.Price.ToString());
+            p.EncryptedPrice = _Protector.Protect(model.Price.ToString()!);
             _db.Products.Update(p);
             await _db.SaveChangesAsync();
+
             TempData["Success"] = $"Product \"{p.Name}\" has been successfully updated!";
             return RedirectToAction(nameof(Index));
         }
 
-        //GET: /Products/Delete/5
-        [Authorize(Roles = "Admin")]//Only Admin can delete products
+        // GET: /Products/Delete/5
+        [Authorize(Roles = "Admin")] //Only Admin can delete products
         public async Task<IActionResult> Delete(int id)
         {
             var p = await _db.Products.FindAsync(id);
             if (p == null) return NotFound();
-            var vm = new ProductViewModel { Id = p.Id, Name = p.Name, Price = decimal.Parse(_Protector.Unprotect(p.EncryptedPrice)) };
+
+            var vm = new ProductViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = decimal.Parse(_Protector.Unprotect(p.EncryptedPrice!))
+            };
             return View(vm);
         }
 
@@ -108,12 +117,21 @@ namespace Role_Base_Product_Management_System.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Explicitly check ModelState to satisfy analyzers
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             var p = await _db.Products.FindAsync(id);
             if (p == null) return NotFound();
+
             _db.Products.Remove(p);
             await _db.SaveChangesAsync();
+
             TempData["Success"] = $"Product \"{p.Name}\" has been successfully deleted!";
             return RedirectToAction(nameof(Index));
         }
+
     }
 }
