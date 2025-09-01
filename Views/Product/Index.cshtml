@@ -55,6 +55,11 @@
         }
     </tbody>
 </table>
+<div>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        <button type="submit" class="btn btn-sm btn-danger">Logout</button>
+    </form>
+</div>
 
 @if (User.IsInRole("Admin"))
 {
