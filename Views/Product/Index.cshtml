@@ -3,33 +3,60 @@
     ViewData["Title"] = "Products";
 }
 
+@*Used to display welcome message and role badge if the user is logged in Admin or Manager *@
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <div class="alert alert-info">
+        Welcome, <strong>@User.Identity?.Name</strong>!<br />
+        You are logged in as:
+        @if (User.IsInRole("Admin"))
+        {
+            <span class="badge bg-danger">Admin</span>
+        }
+        else if (User.IsInRole("Manager"))
+        {
+            <span class="badge bg-primary">Manager</span>
+        }
+    </div>
+}
+
+
 <h2>Products</h2>
 
-@if (TempData["Success"] != null) {
+@if (TempData["Success"] != null)
+{
     <div class="alert alert-success">@TempData["Success"]</div>
 }
 
 <table class="table table-striped">
     <thead>
-        <tr><th>Id</th><th>Name</th><th>Price</th><th>Actions</th></tr>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
     </thead>
     <tbody>
-    @foreach (var p in Model) {
-        <tr>
-            <td>@p.Id</td>
-            <td>@p.Name</td>
-            <td>@(p.Price.HasValue ? p.Price.Value.ToString("C") : "")</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-primary">Edit</a>
-                @if (User.IsInRole("Admin")) {
-                    <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-sm btn-danger">Delete</a>
-                }
-            </td>
-        </tr>
-    }
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Id</td>
+                <td>@p.Name</td>
+                <td>@(p.Price.HasValue? p.Price.Value.ToString("C") : "")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-primary">Edit</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-sm btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
-@if (User.IsInRole("Admin")) {
+@if (User.IsInRole("Admin"))
+{
     <a asp-action="Create" class="btn btn-success">Add New Product</a>
 }
