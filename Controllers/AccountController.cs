@@ -66,7 +66,7 @@ namespace Role_Base_Product_Management_System.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout() {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
     }
 }
